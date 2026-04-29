@@ -387,7 +387,7 @@ app.delete('/api/expenses/:id', authenticateToken, async (req, res) => {
 app.get('/api/analytics/monthly', authenticateToken, async (req, res) => {
   try {
     const summary = await Expense.aggregate([
-      { $match: { userId: mongoose.Types.ObjectId(req.userId) } },
+      { $match: { userId: new mongoose.Types.ObjectId(req.userId) } },
       { $group: { _id: { $substr: ['$date', 0, 7] }, total: { $sum: '$amt' }, count: { $sum: 1 } } },
       { $sort: { _id: 1 } }
     ]);
@@ -402,8 +402,8 @@ app.get('/api/analytics/categories', authenticateToken, async (req, res) => {
   try {
     const { month } = req.query;
     const matchStage = month 
-      ? { $match: { userId: mongoose.Types.ObjectId(req.userId), date: { $regex: `^${month}` } } } 
-      : { $match: { userId: mongoose.Types.ObjectId(req.userId) } };
+      ? { $match: { userId: new mongoose.Types.ObjectId(req.userId), date: { $regex: `^${month}` } } } 
+      : { $match: { userId: new mongoose.Types.ObjectId(req.userId) } };
     const summary = await Expense.aggregate([
       matchStage,
       { $group: { _id: '$cat', total: { $sum: '$amt' }, count: { $sum: 1 } } },
@@ -419,7 +419,7 @@ app.get('/api/analytics/categories', authenticateToken, async (req, res) => {
 app.get('/api/analytics/priority', authenticateToken, async (req, res) => {
   try {
     const summary = await Expense.aggregate([
-      { $match: { userId: mongoose.Types.ObjectId(req.userId) } },
+      { $match: { userId: new mongoose.Types.ObjectId(req.userId) } },
       { $group: { _id: '$pri', total: { $sum: '$amt' }, count: { $sum: 1 } } }
     ]);
     res.json({ success: true, data: summary });
@@ -432,7 +432,7 @@ app.get('/api/analytics/priority', authenticateToken, async (req, res) => {
 app.get('/api/analytics/payments', authenticateToken, async (req, res) => {
   try {
     const summary = await Expense.aggregate([
-      { $match: { userId: mongoose.Types.ObjectId(req.userId) } },
+      { $match: { userId: new mongoose.Types.ObjectId(req.userId) } },
       { $group: { _id: '$pay', total: { $sum: '$amt' }, count: { $sum: 1 } } },
       { $sort: { total: -1 } }
     ]);
@@ -446,7 +446,7 @@ app.get('/api/analytics/payments', authenticateToken, async (req, res) => {
 app.get('/api/analytics/predict', authenticateToken, async (req, res) => {
   try {
     const summary = await Expense.aggregate([
-      { $match: { userId: mongoose.Types.ObjectId(req.userId) } },
+      { $match: { userId: new mongoose.Types.ObjectId(req.userId) } },
       { $group: { _id: { $substr: ['$date', 0, 7] }, total: { $sum: '$amt' } } },
       { $sort: { _id: -1 } },
       { $limit: 3 }
